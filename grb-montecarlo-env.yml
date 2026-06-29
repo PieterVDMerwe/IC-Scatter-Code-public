@@ -1,0 +1,13 @@
+name: grb-montecarlo-env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - numpy
+  - scipy
+  - matplotlib
+  - numba
+  - pip
+  - pip:
+      - cupy-cuda12x  # Use this line for CUDA 12.0–12.3 installed system-wide

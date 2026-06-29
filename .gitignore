@@ -1,0 +1,13 @@
+# Ignore files without extensions
+*
+!*/
+!*.*
+
+# Exclude specific patterns
+*.pdf
+*.png
+*.reg
+*.dat
+*.h5
+__pycache__/
+.agents/
