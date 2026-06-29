@@ -1,4 +1,5 @@
-# Ignore files without extensions
+# Ignore files without extensions (allow specific known files)
+!LICENSE
 *
 !*/
 !*.*
