@@ -1,3 +1,10 @@
+"""Plotting and visualization functions for Inverse Compton simulation results.
+
+This module contains various plotting utilities to visualize energy spectrums,
+polarizations, angular distributions, light curves, and top-down polar positions
+of simulated photons.
+"""
+
 import Shared.Distributions as SD
 import Shared.Core_IC as IC
 import Shared.Common as SC
@@ -82,6 +89,12 @@ vyas_mono_305_y = np.array([5.746124082964725, 18.040559400917857, 87.2217909656
 
 
 def PlotTheta(h5file,num_bins = 100):
+    """Plots a histogram of polar angles (theta) of escaped photons.
+
+    Args:
+        h5file: Opened h5py.File object containing simulation datasets.
+        num_bins: Number of histogram bins. Defaults to 100.
+    """
     theta_photon = (cp.array(h5file['photon_theta'][:]))
     # energy_mask = (cp.array( h5file['photon_energies'][:])*NATURAL_TO_KEV) >= 1.0
     # theta_photon_mask = cp.logical_and(theta_photon*BULK_LORENTZ < 40.0,energy_mask)
@@ -96,9 +109,29 @@ def PlotTheta(h5file,num_bins = 100):
     plt.show()
 
 def BB(epsi,theta):
+    """Calculates the scaling factor for Compton scattering energy change.
+
+    Args:
+        epsi: Photon energy parameter.
+        theta: Polar scattering angle.
+
+    Returns:
+        float: Computed scaling factor.
+    """
     return 1.0/(1.0+ epsi*(1.0-np.cos(theta)))
 
 def PlotThetaTest(h5file,output_path,num_bins = 100,theory_adapted = True):
+    """Plots photon theta distribution and compares it with the analytical formula.
+
+    Saves the output plot to the specified path.
+
+    Args:
+        h5file: Opened h5py.File object.
+        output_path: Directory path where the output PDF will be saved.
+        num_bins: Number of histogram bins. Defaults to 100.
+        theory_adapted: If True, uses the adapted theoretical formula.
+            Defaults to True.
+    """
     theta_photon = (cp.array(h5file['photon_theta'][:]))
     hist, edges = cp.histogram(theta_photon, bins=num_bins+1,density = True)
     bin_centers = (edges[:-1] + edges[1:]) / 2.0
@@ -131,6 +164,14 @@ def PlotThetaTest(h5file,output_path,num_bins = 100,theory_adapted = True):
     plt.show()
 
 def PlotPhiTest(h5file,viewing_angles, output_path,num_bins = 100):
+    """Plots azimuthal angle (phi) distributions for various viewing angles.
+
+    Args:
+        h5file: Opened h5py.File object.
+        viewing_angles: List/array of viewing angles (theta) to filter by.
+        output_path: Path to save the resulting plot.
+        num_bins: Number of histogram bins. Defaults to 100.
+    """
     for viewing_theta in viewing_angles:
         phi_photon = (cp.array(h5file['photon_phi'][:]))
         theta_photon = (cp.array(h5file['photon_theta'][:]))
@@ -150,6 +191,13 @@ def PlotPhiTest(h5file,viewing_angles, output_path,num_bins = 100):
 
 
 def PlotPolarizationVsThetaTest(h5file, output_path, num_bins = 50):
+    """Plots polarization degree and angle as a function of theta for verification.
+
+    Args:
+        h5file: Opened h5py.File object.
+        output_path: Path to save the resulting plot.
+        num_bins: Number of histogram bins. Defaults to 50.
+    """
     fig, (ax_pd, ax_pa) = plt.subplots(2, 1, figsize=(6, 5), sharex=True, gridspec_kw={'height_ratios':[4,1],'hspace':0.0})
 
 
@@ -261,6 +309,19 @@ def PlotPolarizationVsThetaTest(h5file, output_path, num_bins = 50):
 
 
 def PlotEnergy(h5file, viewing_angles, output_path, num_bins = 500, figname="energy_sed.pdf",plot_backscatter_cork_pair_thoeretical=False,plot_backscatter_cork_mono_thoeretical=False):
+    """Plots the energy spectrum (SED) of escaped photons for different viewing angles.
+
+    Args:
+        h5file: Opened h5py.File object.
+        viewing_angles: List/array of viewing angles (theta) to filter by.
+        output_path: Path to save the resulting plot.
+        num_bins: Number of histogram bins. Defaults to 500.
+        figname: Output file name. Defaults to "energy_sed.pdf".
+        plot_backscatter_cork_pair_thoeretical: If True, plots theoretical pair spectrum.
+            Defaults to False.
+        plot_backscatter_cork_mono_thoeretical: If True, plots theoretical monoenergetic spectrum.
+            Defaults to False.
+    """
     fig, ax = plt.subplots()
     print("1.0e8*scpc.k/M_EC2:",1.0e8*scpc.k/M_EC2)
 
@@ -362,6 +423,19 @@ def PlotEnergy(h5file, viewing_angles, output_path, num_bins = 500, figname="ene
     plt.show()
 
 def PlotEnergyLimitedScatterig(h5file, viewing_angles, output_path, num_bins = 500, figname="energy_sed_limited_scattering.pdf",plot_backscatter_cork_pair_thoeretical=False,plot_backscatter_cork_mono_thoeretical=False):
+    """Plots energy spectrum (SED) for photons under limited scattering regimes.
+
+    Args:
+        h5file: Opened h5py.File object.
+        viewing_angles: List/array of viewing angles (theta) to filter by.
+        output_path: Path to save the resulting plot.
+        num_bins: Number of histogram bins. Defaults to 500.
+        figname: Output file name. Defaults to "energy_sed_limited_scattering.pdf".
+        plot_backscatter_cork_pair_thoeretical: If True, plots theoretical pair spectrum.
+            Defaults to False.
+        plot_backscatter_cork_mono_thoeretical: If True, plots theoretical monoenergetic spectrum.
+            Defaults to False.
+    """
     fig, ax = plt.subplots()
     print("1.0e8*scpc.k/M_EC2:",1.0e8*scpc.k/M_EC2)
 
@@ -542,6 +616,14 @@ def PlotEnergyLimitedScatterig(h5file, viewing_angles, output_path, num_bins = 5
 #     plt.show()
 
 def PlotPolarizationVsEnergy(h5file, viewing_angles, output_path, num_bins = 100):
+    """Plots polarization degree (PD) as a function of photon energy.
+
+    Args:
+        h5file: Opened h5py.File object.
+        viewing_angles: List/array of viewing angles (theta) to filter by.
+        output_path: Path to save the resulting plot.
+        num_bins: Number of histogram bins. Defaults to 100.
+    """
     fig, (ax_pd, ax_pa) = plt.subplots(2, 1, figsize=(6, 5), sharex=True, gridspec_kw={'height_ratios':[4,1],'hspace':0.0})
 
     for viewing_angle in viewing_angles:
@@ -658,6 +740,13 @@ def PlotPolarizationVsEnergy(h5file, viewing_angles, output_path, num_bins = 100
 
 
 def PlotTopDownPositionPolar(h5file, viewing_angle, output_path):
+    """Plots the 2D spatial positions of escaped photons from a top-down polar perspective.
+
+    Args:
+        h5file: Opened h5py.File object.
+        viewing_angle: Target viewing angle (theta).
+        output_path: Path to save the resulting plot.
+    """
     # Select photons in viewing window
     photons_in_viewing_window = cp.logical_and(
         cp.logical_and(
@@ -703,6 +792,16 @@ def PlotTopDownPositionPolar(h5file, viewing_angle, output_path):
 
 
 def PlotTopDownPositionPolarHeatmap(h5file, viewing_angle, output_path, n_phi_bins=200, n_theta_bins=100,theta_j = 0.1):
+    """Plots a 2D polar heatmap showing the spatial distribution of escaped photons.
+
+    Args:
+        h5file: Opened h5py.File object.
+        viewing_angle: Target viewing angle (theta).
+        output_path: Path to save the resulting plot.
+        n_phi_bins: Number of bins along the phi coordinate. Defaults to 200.
+        n_theta_bins: Number of bins along the theta coordinate. Defaults to 100.
+        theta_j: Jet opening semi-angle limit. Defaults to 0.1.
+    """
     # Select photons in viewing window (still using saved theta/phi for now)
     photons_in_viewing_window = cp.logical_and(
         cp.logical_and(
@@ -756,6 +855,15 @@ def PlotTopDownPositionPolarHeatmap(h5file, viewing_angle, output_path, n_phi_bi
 
 
 def PlotLightCurve(h5file, viewing_angles, output_path, num_bins = 100, figname="Light_Curve.pdf"):
+    """Plots the light curve (intensity vs. time) of escaped photons.
+
+    Args:
+        h5file: Opened h5py.File object.
+        viewing_angles: List/array of viewing angles (theta) to filter by.
+        output_path: Path to save the resulting plot.
+        num_bins: Number of histogram bins. Defaults to 100.
+        figname: Output file name. Defaults to "Light_Curve.pdf".
+    """
     fig, ax = plt.subplots()
 
     for viewing_angle in viewing_angles:
@@ -821,6 +929,16 @@ def PlotLightCurve(h5file, viewing_angles, output_path, num_bins = 100, figname=
 
 
 def FOb(t,thetaObs,bulk_lorentz=100.0):
+    """Calculates the observational time conversion factor.
+
+    Args:
+        t: Time array.
+        thetaObs: Observation angle.
+        bulk_lorentz: Jet bulk Lorentz factor. Defaults to 100.0.
+
+    Returns:
+        cupy.ndarray: Computed observational times.
+    """
     print("BULK_LORENTZ",bulk_lorentz)
     ri = np.sqrt(1.0e21)
     A  = ri*thetaObs
@@ -834,6 +952,22 @@ def FOb(t,thetaObs,bulk_lorentz=100.0):
 
 
 def PlotLightCurveAssumingSymmetry(h5file, viewing_angles, output_path, num_bins = 100, shift_t0 = False, figname="Light_Curve.pdf",plot_backscatter_cork_thoeretical = False, restrict_time=False,log_scale=False,mono_energetic=False):
+    """Plots the light curve assuming azimuthal symmetry of the jet shell.
+
+    Args:
+        h5file: Opened h5py.File object.
+        viewing_angles: List/array of viewing angles (theta) to filter by.
+        output_path: Path to save the resulting plot.
+        num_bins: Number of histogram bins. Defaults to 100.
+        shift_t0: If True, shifts initial time t0. Defaults to False.
+        figname: Output file name. Defaults to "Light_Curve.pdf".
+        plot_backscatter_cork_thoeretical: If True, plots theoretical curve.
+            Defaults to False.
+        restrict_time: If True, limits the x-axis time range. Defaults to False.
+        log_scale: If True, plots on a log scale. Defaults to False.
+        mono_energetic: If True, handles monoenergetic spectrum characteristics.
+            Defaults to False.
+    """
     fig, ax = plt.subplots()
 
     for viewing_angle in viewing_angles:
@@ -1011,6 +1145,18 @@ def PlotLightCurveAssumingSymmetry(h5file, viewing_angles, output_path, num_bins
 #     plt.show()
 
 def PlotPolarizationVsTime(h5file, viewing_angles, output_path, num_bins = 50, shift_t0 = False, restrict_time=False,BS_plot=False):
+    """Plots polarization degree and angle as a function of time.
+
+    Args:
+        h5file: Opened h5py.File object.
+        viewing_angles: List/array of viewing angles (theta) to filter by.
+        output_path: Path to save the resulting plot.
+        num_bins: Number of histogram bins. Defaults to 50.
+        shift_t0: If True, shifts initial time t0. Defaults to False.
+        restrict_time: If True, limits the x-axis time range. Defaults to False.
+        BS_plot: If True, adjusts plots specifically for backscatter cork configurations.
+            Defaults to False.
+    """
     fig, (ax_pd, ax_pa) = plt.subplots(2, 1, figsize=(6, 5), sharex=True, gridspec_kw={'height_ratios':[4,1],'hspace':0.0})
 
     for viewing_angle in viewing_angles:
@@ -1127,6 +1273,13 @@ def PlotPolarizationVsTime(h5file, viewing_angles, output_path, num_bins = 50, s
 
 
 def PlotPolarizationVsTheta(h5file, output_path, num_bins = 50):
+    """Plots polarization degree and angle as a function of theta.
+
+    Args:
+        h5file: Opened h5py.File object.
+        output_path: Path to save the resulting plot.
+        num_bins: Number of histogram bins. Defaults to 50.
+    """
     fig, (ax_pd, ax_pa) = plt.subplots(2, 1, figsize=(6, 5), sharex=True, gridspec_kw={'height_ratios':[4,1],'hspace':0.0})
 
     energy_mask = (cp.array( h5file['photon_energies'][:])*NATURAL_TO_KEV) >= 1.0
@@ -1229,6 +1382,14 @@ def PlotPolarizationVsTheta(h5file, output_path, num_bins = 50):
 
 
 def PlotEnergyUniformBins(h5file, viewing_angles, output_path, bins=10000):
+    """Plots the energy spectrum of escaped photons using uniform binning.
+
+    Args:
+        h5file: Opened h5py.File object.
+        viewing_angles: List/array of viewing angles (theta) to filter by.
+        output_path: Path to save the resulting plot.
+        bins: Number of uniform bins. Defaults to 10000.
+    """
     fig, ax = plt.subplots()
 
     for viewing_angle in viewing_angles:
@@ -1253,6 +1414,14 @@ def PlotEnergyUniformBins(h5file, viewing_angles, output_path, bins=10000):
 
 
 def PlotPolarizationUniformBins(h5file, viewing_angles, output_path, bins=100):
+    """Plots polarization degree vs. energy using uniform binning.
+
+    Args:
+        h5file: Opened h5py.File object.
+        viewing_angles: List/array of viewing angles (theta) to filter by.
+        output_path: Path to save the resulting plot.
+        bins: Number of uniform bins. Defaults to 100.
+    """
     fig, (ax_pd, ax_pa) = plt.subplots(2, 1, sharex=True, figsize=(6, 8))
 
     for viewing_angle in viewing_angles:

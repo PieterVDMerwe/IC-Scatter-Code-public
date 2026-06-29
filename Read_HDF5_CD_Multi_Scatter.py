@@ -1,3 +1,9 @@
+"""Utility script to read and print sample data from multi-scatter Compton Drag HDF5 simulation output.
+
+Reads and lists datasets from 'Compton_Drag_Multi_Scatter_Data.h5', validating Q
+bounds and printing final scattering iteration frequencies.
+"""
+
 import h5py
 import numpy as np
 import cupy as cp
@@ -20,12 +26,10 @@ with h5py.File(file_path, 'r') as f:
         print(f"Sample data for {key}:\n", data)
     Q_device = cp.array(f['Q'][:])
     Q_nan = cp.isnan(Q_device)
-    Q_larger = cp.logical_or(Q_device>1.0,Q_device<-1.0)
-    print("nans in Q",len(Q_device[Q_nan]))
-    print("out of bounds in Q",len(Q_device[Q_larger]))
+    Q_larger = cp.logical_or(Q_device > 1.0, Q_device < -1.0)
+    print("nans in Q", len(Q_device[Q_nan]))
+    print("out of bounds in Q", len(Q_device[Q_larger]))
 
-    for i in range(np.max(f['final_iteration'][:])+1):
-        scatter_check = f['final_iteration'][:] == i#+1
-        # print(scatter_check)
-        # print(f['final_iteration'][scatter_check])
-        print(f"{i} scatterings: ",len(f['final_iteration'][:][scatter_check]) )#/f['final_iteration'][:].size)
+    for i in range(np.max(f['final_iteration'][:]) + 1):
+        scatter_check = f['final_iteration'][:] == i
+        print(f"{i} scatterings: ", len(f['final_iteration'][:][scatter_check]))

@@ -1,3 +1,9 @@
+"""Utility script to read and print sample data from backscatter HDF5 simulation output.
+
+Reads and lists datasets from 'Backscatter_Dominated_Cork_Data.h5', printing
+shape, dtype, sample elements, and statistics of final scattering counts.
+"""
+
 import h5py
 import numpy as np
 
@@ -19,7 +25,5 @@ with h5py.File(file_path, 'r') as f:
         print(f"Sample data for {key}:\n", data)
 
     for i in range(31):
-        scatter_check = f['final_iteration'][:] == i#+1
-        # print(scatter_check)
-        # print(f['final_iteration'][scatter_check])
-        print(f"{i} scatterings: ",len(f['final_iteration'][:][scatter_check])/f['final_iteration'][:].size)
+        scatter_check = f['final_iteration'][:] == i
+        print(f"{i} scatterings: ", len(f['final_iteration'][:][scatter_check]) / f['final_iteration'][:].size)
